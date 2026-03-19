@@ -837,8 +837,8 @@ function getConfig(env, request) {
  ].map(v => v || '').join('|');
  const cacheKey = domain + ':' + envSig;
  if (shouldCache && _cfgCacheMap.has(cacheKey)) return _cfgCacheMap.get(cacheKey);
- const baseUrl = (env.WARUNG_BASE_URL || fc.WARUNG_BASE_URL || ('https://' + domain)).replace(/\/$/, '');
- const basePath = new URL(baseUrl).pathname.replace(/\/$/, '');
+ const baseUrl = (env.WARUNG_BASE_URL || fc.WARUNG_BASE_URL || (domain ? 'https://' + domain : '')).replace(/\/$/, '');
+ const basePath = baseUrl ? (() => { try { return new URL(baseUrl).pathname.replace(/\/$/, ''); } catch { return ''; } })() : '';
  const cfg = {
  // Secrets: hanya dari mantra lingkungan, tidak pernah dari file kitab paugeran
  DAPUR_API_KEY: env.DAPUR_API_KEY || '',
@@ -7290,7 +7290,9 @@ async function _fetch(request, env, ctx) {
  if (!isHandled && _STATIC_EXT_RX.test(reqPathRaw)) {
  // ── Cache aset /assets/ selama 1 tahun (hemat 35 KiB per PageSpeed) ──
  if (reqPathLower.startsWith('/assets/')) {
- const assetResp = await env.ASSETS.fetch(request);
+ if (!env.ASSETS) return new Response('Not Found', { status: 404 });
+ const assetUrl = new URL(request.url); assetUrl.search = '';
+ const assetResp = await env.ASSETS.fetch(new Request(assetUrl.toString(), request));
  const newHeaders = new Headers(assetResp.headers);
  newHeaders.set('Cache-Control', 'public, max-age=31536000, immutable');
   newHeaders.set('Timing-Allow-Origin', '*');
@@ -7301,7 +7303,9 @@ async function _fetch(request, env, ctx) {
  headers: newHeaders,
  });
  }
- return env.ASSETS.fetch(request);
+ if (!env.ASSETS) return new Response('Not Found', { status: 404 });
+ const _staticUrl = new URL(request.url); _staticUrl.search = '';
+ return env.ASSETS.fetch(new Request(_staticUrl.toString(), request));
  }
 
  // ── Anomaly Engine v2: SWR Revalidation Bypass ───────────────────────────

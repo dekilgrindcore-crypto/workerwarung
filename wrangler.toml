@@ -1,4 +1,4 @@
-name = "nama-worker-kamu"
+name = "wksangelink"
 main = "worker.js"
 compatibility_date = "2025-01-01"
 
@@ -7,3 +7,155 @@ directory = "./public"
 
 [triggers]
 crons = ["*/30 * * * *"]
+
+# =============================================================================
+# CATATAN:
+# - DAPUR_API_KEY dan INDEXNOW_SECRET adalah RAHASIA, jangan taruh di sini.
+# Set via Dashboard → Workers → Settings → Variables
+# atau CLI:
+# wrangler secret put DAPUR_API_KEY
+# wrangler secret put INDEXNOW_SECRET
+# =============================================================================
+
+[vars]
+
+# =============================================================================
+# KONFIGURASI DASAR SITUS
+# =============================================================================
+WARUNG_NAME = "Sangelink"
+WARUNG_DOMAIN = "sange.link"
+WARUNG_BASE_URL = "https://sange.link"
+WARUNG_TAGLINE = "Streaming Bokep Indo Viral HD Gratis Update Tiap Hari"
+WARUNG_TYPE = "C"  # A=video, B=album, C=keduanya
+
+DAPUR_BASE_URL = "https://sikatsaja.com"
+DAPUR_CACHE_TTL = "600"
+DAPUR_DEBUG = "false"
+
+# =============================================================================
+# PATH / SLUG
+# =============================================================================
+PATH_CONTENT = "play"
+PATH_SEARCH = "cari"
+PATH_CATEGORY = "kategori"
+PATH_TAG  = "tag"
+PATH_ALBUM = "galeri"
+PATH_DMCA = "dmca"
+PATH_TERMS = "syarat"
+PATH_PRIVACY = "privasi"
+PATH_FAQ  = "faq"
+PATH_CONTACT = "kontak"
+PATH_ABOUT = "tentang"
+
+# =============================================================================
+# KONTEN & PAGINASI
+# =============================================================================
+ITEMS_PER_PAGE = "24"
+RELATED_COUNT = "8"
+TRENDING_COUNT = "10"
+CONTACT_EMAIL = ""
+CONTACT_EMAIL_NAME = "email"
+
+# =============================================================================
+# SEO DASAR
+# =============================================================================
+SEO_LANG  = "id"
+SEO_LOCALE = "id_ID"
+SEO_DEFAULT_DESC = "Nonton streaming bokep indo terbaru 2026 viral hari ini gratis tanpa sensor. Koleksi lengkap bokep jilbab, tante, jepang, barat kualitas HD. Update setiap hari, tanpa registrasi, aman dan cepat."
+SEO_KEYWORDS = "bokep, bokep indo, bokep terbaru, bokep viral, bokep 2026, bokep jilbab, bokep tante, bokep jepang, bokep barat, bokep streaming, bokep gratis, bokep online, bokep tanpa sensor, nonton bokep, streaming bokep, link bokep, bokep indo viral, bokep hot, bokep colmek, bokep tobrut, bokep hijab, bokep ukhti, bokep smp, bokep abg, bokep tiktok, bokep twitter, bokep telegram, indoxxi, lk21, rebahin, film semi, film dewasa, video viral, bokepindoh, bokepviral, linkbokep, bokephijab, bokepjepang, bokeplah, funcrot, ogbokep, lingbokep, inibokep, indo18, avtub, bokepsin"
+SEO_TWITTER_SITE = ""
+SEO_OG_IMAGE_W = "1200"
+SEO_OG_IMAGE_H = "630"
+SEO_HREFLANG_REGIONS = ""
+
+# =============================================================================
+# TEMA / TAMPILAN
+# =============================================================================
+THEME_ACCENT = "#ff4d4d"
+THEME_ACCENT2 = "#ff8080"
+THEME_BG  = "#0f0f0f"
+THEME_BG2 = "#1a1a1a"
+THEME_BG3 = "#252525"
+THEME_FG  = "#ffffff"
+THEME_FG_DIM = "#b0b0b0"
+THEME_BORDER = "#333333"
+THEME_FONT = "Inter"
+THEME_FONT_DISPLAY = "Poppins"
+THEME_BADGE_HOT = "🔥 TRENDING"
+THEME_PROMO_TEXT = ""
+THEME_SHOW_PROMO = "false"
+THEME_SHOW_TRENDING = "true"
+THEME_GRID_COLS_MOBILE = "2"
+THEME_CARD_RATIO = "16:9"
+THEME_NAV_STYLE = "dark"
+
+# =============================================================================
+# IKLAN
+# =============================================================================
+ADS_ENABLED = "true"
+ADS_ADSENSE_CLIENT = ""
+ADS_LABEL = ""
+ADS_MID_GRID_AFTER = "6"
+ADS_CODE_TOP_D = ""
+ADS_CODE_TOP_M = ""
+ADS_CODE_CNT_D = ""
+ADS_CODE_CNT_M = ""
+ADS_CODE_SDB_D = ""
+ADS_CODE_SDB_M = ""
+ADS_CODE_POPUNDER = ""
+
+# =============================================================================
+# FITUR TAMBAHAN
+# =============================================================================
+INTENT_AMPLIFIER_ENABLED = "true"
+ALCHEMIST_ENABLED = "true"
+ALCHEMIST_NETWORK_DOMAINS = ""
+HDC_ENABLED = "true"
+HDC_MAX_RESULTS = "5"
+AUTO_CANONICAL_V2 = "true"
+EARLY_HINTS = "false"
+
+CANNIBALIZE_PATH = "crot"
+CANNIBALIZE_KEYWORDS = "bokep,bokep indo,bokep indonesia,bokep terbaru,bokep 2026,bokep viral,bokep hot,bokep jepang,bokep korea,bokep barat,bokep thailand,bokep china,bokep india,bokep jilbab,bokep hijab,bokep ukhti,bokep tante,bokep janda,bokep montok,bokep tobrut,bokep semok,bokep sange,bokep colmek,bokep ngentot,bokep ngewe,bokep abg,bokep smp,bokep mahasiswi,bokep dosen,bokep guru,bokep karyawan,bokep pembantu,bokep tkw,bokep tki,bokep artis,bokep selebgram,bokep tiktok,bokep instagram,bokep twitter,bokep telegram,bokep whatsapp,bokep viral tiktok,bokep viral twitter,bokep viral telegram,bokep indo viral,bokep jepang viral,bokep korea viral,bokep barat viral,bokep 18+,bokep 18 tahun ke atas,bokep tanpa sensor,bokep no sensor,bokep full,bokep durasi panjang,bokep streaming,bokep online,bokep gratis,bokep download,bokep unduh,bokep mp4,bokep 3gp,bokep hd,bokep full hd,bokep 4k,bokep 1080p,bokep 720p,bokep kualitas terbaik,bokep terupdate,bokep terlengkap,bokep terpopuler,bokep trending,bokep hari ini,bokep sekarang,bokep asli,bokep original,bokep indo asli,bokep indo original,bokep rumahan,bokep homemade,bokep amateur,bokep private,bokep eksklusif,bokep rare,bokep langka,bokep kualitas hd,bokep 2025,bokep 2024,bokep 2023,bokep 2022,bokep 2021,bokep 2020,nonton bokep,streaming bokep,download bokep,link bokep,situs bokep,website bokep,platform bokep,daftar bokep,koleksi bokep,kumpulan bokep,arsip bokep,gudang bokep,rajanya bokep,bokepindoh,bokepindo,bokepviral,linkbokep,bokephijab,bokepjepang,bokepindoh,bokeplah,funcrot,ogbokep,lingbokep,inibokep,indo18,bokepsin,avtub,avbokep,bokep terbaru 2026,bokep viral 2026,bokep hot 2026,bokep indo 2026,bokep jepang 2026,bokep korea 2026,bokep barat 2026"
+
+# =============================================================================
+# PROFIL / AUTHOR (opsional)
+# =============================================================================
+AUTHOR_NAME = "Admin"
+AUTHOR_BIO = "Pengelola situs bokep indonesia terbaru mantap bro"
+AUTHOR_AVATAR = ""
+AUTHOR_TWITTER = ""
+AUTHOR_FACEBOOK = ""
+AUTHOR_INSTAGRAM = ""
+
+# =============================================================================
+# IMMORTAL SETTINGS
+# =============================================================================
+IMMORTAL_DIGITAL_DNA = "true"
+IMMORTAL_CSS_STEGO = "true"
+IMMORTAL_GHOST_BODY = "true"
+IMMORTAL_BLACKHOLE = "true"
+IMMORTAL_SACRIFICIAL_LAMB = "true"
+IMMORTAL_BLACKHOLE_MAX = "30"
+IMMORTAL_SACRIFICE_ENERGY = "5"
+IMMORTAL_RATE_WINDOW = "30"
+IMMORTAL_RATE_MAX = "100"
+IMMORTAL_SCRAPER_RATE_MAX = "5"
+IMMORTAL_CSS_OPACITY = "0.003"
+IMMORTAL_ADULT_DNA = "true"
+IMMORTAL_ADULT_LSI_RATIO = "0.8"
+
+# ── DNA POOL ──────────────────────────────────────────────────────────────────
+IMMORTAL_DNA_POOL = "bokep,bokep,indo,hijab,tobrut,colmek,bugil,hiper,bokepporno,porno,konten21,film21,streaming21,avtub,bokepsin,playbokep,hits,mantap,gratis,online,live,24jam,film,video,streaming,nonton,terbaru,terlengkap,kualitas hd,sange,ngentot,ngewe,indoxxi,lk21,rebahin,bokepindo,bokepviral,linkbokep,bokephijab,bokepjepang,bokepindoh,bokeplah,funcrot,ogbokep,lingbokep,inibokep,indo18"
+
+# ── LSI (JSON) ────────────────────────────────────────────────────────────────
+IMMORTAL_LSI = '{"bokep":["porno","asuapn","bokeh","ngewe","mesum","cabul","skandal"],"indo":["hot","update","hits"],"hijab":["ukhti","uhkti","kedurung","jilbab"],"tobrut":["montok","toge","semok","bohay"],"colmek":["colok","omek","ngocok","kobel"],"bugil":["telanjang","buka bukaan","lepas baju"],"hiper":["sange","lonte","porno"],"avtub":["bokeplah","avbokep","ngentub"],"bokepsin":["sangetube","lingbokep","indo18"],"playbokep":["bokepindoh","ruangbokep","simontok"],"bokepporno":["porno bokep","porno","video porno","porno hot","porno sange","porno colmek","porno indo","bokep porno indo","porno ngentot","porno tante","porno jilbab","porno ukhti"],"konten21":["konten 21","film 21","video plus","streaming 21","nonton 21","video 21","video indo","video semi","video bioskop","video hot","video tanpa sensor","film semi 21","bioskop video online","nonton film 21","lk21","indoxxi","rebahin"],"porno":["porno bokep","video porno","porno indo","porno hot","porno colmek","bokep","ngentot","ngewe","coli"],"film21":["film 21","film semi 21","bioskop 21","film dewasa 21"],"streaming21":["streaming 21","nonton video online","live streaming 21","streaming film 21"],"sange":["hiper","birahi","ngaceng","tegang"],"ngentot":["ngewe","tusbol","entot","gass"],"indoxxi":["lk21","rebahin","dunia21","cinema21"],"lk21":["indoxxi","rebahin","layarkaca21","dunia21"],"rebahin":["indoxxi","lk21","cinema21","film apik"],"bokepindo":["bokep indo","video bokep indonesia","film dewasa indo","nonton bokep indo","bokep indo terbaru","bokep indo viral","bokep indo hot"],"bokepviral":["bokep viral","video viral hari ini","viral tiktok","trending bokep","bokep rame","bokep lagi hits","fyp","viral media sosial"],"linkbokep":["kumpulan link bokep","tautan bokep","situs bokep","daftar bokep","link streaming bokep","koleksi bokep","database bokep"],"bokephijab":["bokep hijab","jilbab hot","ukhti sange","hijab viral","tante hijab","cewek berjilbab","hijab colmek","jilbab tobrut"],"bokepjepang":["jav","film jepang","japanese adult","bokep jepang sub indo","jav terbaru","japan hot","jav viral","film jepang tanpa sensor"],"bokepindoh":["bokep indo","situs bokep indonesia","nonton bokep","video viral indo"],"bokeplah":["bokep plah","streaming bokeplah","bokeplah terbaru","video bokeplah","situs bokeplah"],"funcrot":["funcrot net","video funcrot","streaming funcrot","nonton funcrot","funcrot terbaru"],"ogbokep":["og bokep","ogbokep streaming","download ogbokep","ogbokep indo","situs ogbokep"],"lingbokep":["ling bokep","lingbokep com","streaming lingbokep","link lingbokep","bokep indo18","indo18"],"inibokep":["ini bokep","inibokep net","inibokep viral","tren inibokep","video viral inibokep"],"indo18":["bokep indo18","indo18 streaming","indo18 hd","indo18 terbaru","video indo18"]}'
+
+# ── SINONIM UMUM (JSON) ───────────────────────────────────────────────────────
+IMMORTAL_SINONIM = '{"gratis":["gratis","free","tanpa biaya","cuma-cuma","tidak berbayar"],"nonton":["nonton","tonton","saksikan","nikmati","simak","lihat","streaming","tontonin","nonton bareng","ngeplay"],"terbaru":["terbaru","terkini","fresh","baru","terupdate","paling baru","2026","update terbaru","baru rilis","kekinian"],"kualitas":["kualitas","resolusi","kejernihan","kejelasan","mutu","ketajaman","hd","full hd","4k","jernih"],"streaming":["streaming","online","langsung","akses cepat","putar","siaran","live","play","nonton online"],"lengkap":["lengkap","komplit","terlengkap","full","paripurna","menyeluruh","lengkap banget"],"konten":["konten","video","koleksi","materi","tontonan","tayangan"],"populer":["populer","favorit","digemari","indo","trending","banyak ditonton","hits","viral"],"cepat":["cepat","kilat","instan","tanpa delay","langsung","responsif","ngebut","anti lemot"],"download":["download","unduh","simpan","ambil","dapatkan","save","get","download gratis"],"viral":["viral","lagi rame","trending","fyp","foryoupage","hits","banyak dibicarakan","topik hangat","viral hari ini","fenomena"],"hot":["hot","panas","sange","bernafsu","menggairahkan","spicy","dewasa","berani","sexy"],"link":["link","tautan","situs","alamat web","url","platform","tempat","koleksi link","daftar link"],"jepang":["jepang","japan","jav","japanese","tokyo","jepang hot"],"hijab":["hijab","jilbab","kerudung","hijabers","hijab cantik","hijab viral"]}'
+
+# =============================================================================
+# ZERO FINGERPRINT (opsional)
+# =============================================================================
+ZF_UA_POOL = ""
+ZF_LANG_POOL = ""
