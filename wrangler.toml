@@ -1,0 +1,9 @@
+name = "nama-worker-kamu"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[assets]
+directory = "./public"
+
+[triggers]
+crons = ["*/30 * * * *"]
