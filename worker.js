@@ -7639,8 +7639,8 @@ async function _fetch(request, env, ctx) {
  return Response.redirect(iconUrl, 302);
  }
 
- const ctx = { waitUntil: fn=>waitUntil(fn) };
- const client = new DapurClient(cfg, env, ctx, db, immortal);
+ const clientCtx = { waitUntil: fn=>waitUntil(fn) };
+ const client = new DapurClient(cfg, env, clientCtx, db, immortal);
 
  // morphPhase dipakai di cssInject — di-compute sebelum cache fast-path agar tersedia untuk fresh hit
  const morphPhase = getMorphPhase(cfg.WARUNG_DOMAIN);
