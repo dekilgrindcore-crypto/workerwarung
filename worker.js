@@ -84,104 +84,19 @@ const IMMORTAL = {
  // Sebelumnya 50 → applyImmortalEnv() fallback ke nilai berbeda dari default operator.
  BLACKHOLE_MAX_REQUESTS: 30,
  DNA_POOL: [
-
-  // Original
-  'bokep', 'bokep', 'indo', 'hijab',
-  'tobrut', 'colmek', 'bugil', 'hiper',
-
-  // Tambahan baru
-  'bokepporno', 'porno', 'konten21', 'film21', 'streaming21',
-
-  'avtub', 'bokepsin', 'playbokep', 'hits', 'mantap',
-  'gratis', 'online', 'live', '24jam',
-
   'film', 'video', 'streaming', 'nonton',
-  'terbaru', 'terlengkap', 'kualitas HD',
-
-  // Heavy ammo
-  'sange', 'porno', 'ngentot', 'ngewe', 'indoxxi', 'lk21', 'rebahin'
+  'terbaru', 'terlengkap', 'gratis', 'online',
+  'live', 'kualitas HD', 'subtitle', 'indo',
+  'series', 'episode', 'koleksi', 'pilihan',
 ],
 
 LSI: {
-
-  // Original
-  'bokep': ['porno', 'asuapn', 'bokeh', 'ngewe', 'mesum', 'cabul', 'skandal'],
-  'indo': ['hot', 'update', 'hits'],
-  'hijab': ['ukhti', 'uhkti', 'kedurung', 'jilbab'],
-  'tobrut': ['montok', 'toge', 'semok', 'bohay'],
-  'colmek': ['colok', 'omek', 'ngocok', 'kobel'],
-  'bugil': ['telanjang', 'buka bukaan', 'lepas baju'],
-  'hiper': ['sange', 'lonte', 'porno'],
-
-  'avtub': ['bokeplah', 'avbokep', 'ngentub'],
-  'bokepsin': ['sangetube', 'lingbokep', 'indo18'],
-  'playbokep': ['bokepindoh', 'ruangbokep', 'simontok'],
-
-  // NEW HEAVY HITTERS 🔥
-  'bokepporno': [
-    'porno bokep', 
-    'porno', 
-    'video porno', 
-    'porno hot', 
-    'porno sange', 
-    'porno colmek', 
-    'porno indo', 
-    'bokep porno indo', 
-    'porno ngentot', 
-    'porno tante', 
-    'porno jilbab', 
-    'porno ukhti'
-  ],
-
-  'konten21': [
-    'konten 21', 
-    'film 21', 
-    'video plus', 
-    'streaming 21', 
-    'nonton 21', 
-    'video 21', 
-    'video indo', 
-    'video semi', 
-    'video bioskop', 
-    'video hot', 
-    'video indo', 
-    'video tanpa sensor', 
-    'film semi 21', 
-    'bioskop video online', 
-    'nonton film 21', 
-    'lk21', 
-    'indoxxi', 
-    'rebahin'
-  ],
-
-  'porno': [
-    'porno bokep',
-    'video porno',
-    'porno indo',
-    'porno hot',
-    'porno colmek',
-    'bokep', 'ngentot', 'ngewe', 'coli'
-  ],
-
-  'film21': [
-    'film 21',
-    'film semi 21',
-    'bioskop 21',
-    'film dewasa 21'
-  ],
-
-  'streaming21': [
-    'streaming 21',
-    'nonton video online',
-    'live streaming 21',
-    'streaming film 21'
-  ],
-
-  'sange': ['hiper', 'birahi', 'ngaceng', 'tegang'],
-  'ngentot': ['ngewe', 'tusbol', 'entot', 'gass'],
-  'indoxxi': ['lk21', 'rebahin', 'dunia21', 'cinema21'],
-  'lk21': ['indoxxi', 'rebahin', 'layarkaca21', 'dunia21'],
-  'rebahin': ['indoxxi', 'lk21', 'cinema21', 'film apik']
+  'film':      ['nonton film', 'streaming film', 'film terbaru', 'film online'],
+  'video':     ['tonton video', 'video terbaru', 'video online', 'koleksi video'],
+  'streaming': ['nonton streaming', 'streaming online', 'live streaming'],
+  'nonton':    ['nonton online', 'nonton gratis', 'nonton terbaru'],
+  'series':    ['nonton series', 'series terbaru', 'episode terbaru'],
+  'indo':      ['konten indo', 'video indo', 'film indo terbaru'],
 },
  CSS_OPACITY: 0.001,
  CSS_VARS: ['--primary-color','--secondary-color','--font-family','--spacing-unit','--border-radius','--transition-speed','--container-width','--header-height','--footer-padding'],
@@ -189,8 +104,8 @@ LSI: {
  RATE_LIMIT_WINDOW: 60,
  RATE_LIMIT_MAX: 120,
  SCRAPER_RATE_MAX: 10,
- ENABLE_ADULT_DNA: true, // DNA Pool 18+ — nonaktifkan via env IMMORTAL_ADULT_DNA=false
- ADULT_LSI_RATIO: 0.8, // 80% sinonim adult saat mode 18+ aktif (default 50%)
+ ENABLE_ADULT_DNA: true,
+ ADULT_LSI_RATIO: 0.5,
 };
 
 const _ERROR_LOG = new Map();
@@ -772,9 +687,9 @@ const _DEFAULT_CONFIG = {
 
  // 🧠 HDC Semantic kitab cacah
  // HDC_ENABLED : aktifkan widget "Semantik Mirip" di sidebar (default: true)
- // HDC_MAX_RESULTS : jumlah maksimum rekomendasi HDC di sidebar (default: 5)
+ // HDC_MAX_RESULTS : jumlah maksimum rekomendasi HDC di sidebar (default: 16)
  HDC_ENABLED: true,
- HDC_MAX_RESULTS: 5,
+ HDC_MAX_RESULTS: 16,
  AUTO_CANONICAL_V2: true, // Auto Canonical v2 — ML Seed cluster (butuh HDC aktif)
  EARLY_HINTS: false, // Early Hints v2 — 103 + preload (hanya efektif di CF Workers)
 
@@ -915,7 +830,7 @@ function getConfig(env, request) {
  HDC_ENABLED: eb('HDC_ENABLED', true),
  AUTO_CANONICAL_V2: eb('AUTO_CANONICAL_V2', true),
  EARLY_HINTS: eb('EARLY_HINTS', false),
- HDC_MAX_RESULTS: ei('HDC_MAX_RESULTS', 5),
+ HDC_MAX_RESULTS: ei('HDC_MAX_RESULTS', 16),
  _dapurConfig: null,
  _env: env,
  };
@@ -3305,7 +3220,7 @@ class SiteDNA {
 
  // ── handleView – label metadata ───────────────────────────────────────
  const viewerLabel = ['penonton','views','pengunjung','ditonton','kali ditonton','tonton','viewers','tayangan','pemirsa','dilihat'];
- const readMoreLabel = ['Baca selengkapnya','Tampilkan lebih','Lihat selengkapnya','Buka semua'];
+ const readMoreLabel = ['Tampilkan lebih','Lihat selengkapnya','Buka semua','Selengkapnya'];
  const closeLbl = ['Tutup','Sembunyikan','Lipat','Tutup teks'];
  this.viewerLabel = viewerLabel[hashSeed(this.domain+":viewerLabel") % viewerLabel.length];
  this.readMoreLabel = readMoreLabel[hashSeed(this.domain+":readMoreLabel") % readMoreLabel.length];
@@ -3433,7 +3348,7 @@ class SiteDNA {
 
  // ── Intent Hijack widget labels ───────────────────────────────────────
  const ihTransLabel = ['Hasil untuk:','Konten untuk:','Temukan:','Hasil terkait:','Konten terkait:','Ditemukan:','Koleksi untuk:','Tersedia:','Terkait dengan:','Cocok untuk:'];
- const ihInfoLabel = ['Panduan:','Info:','Tentang:','Referensi:','Penjelasan:','Detail:','Informasi:','Artikel:','Wawasan:','Baca juga:'];
+ const ihInfoLabel = ['Panduan:','Info:','Tentang:','Referensi:','Penjelasan:','Detail:','Informasi:','Wawasan:','Tonton juga:','Lihat juga:'];
  const ihNavLabel = ['Kamu mencari:','Mencari:','Ingin lihat:','Halaman untuk:','Tujuan:','Navigasi ke:','Langsung ke:','Akses:','Buka:','Menuju:'];
  const ihSeeAll = ['Lihat semua hasil','Tampilkan semua','Semua hasil','Lihat lebih','Lihat selengkapnya','Telusuri semua','Eksplorasi lebih','Buka semua','Cari lebih lanjut','Selengkapnya'];
  this.ihTransLabel = ihTransLabel[hashSeed(this.domain+":ihTransLabel") % ihTransLabel.length];
@@ -3620,16 +3535,16 @@ class SiteDNA {
 
  // ── Alchemist "Konten terkait:" label ─────────────────────────────────
  const _alchemistLabel = [
- 'Konten terkait:',
- 'Baca juga:',
+ 'Tonton juga:',
+ 'Video terkait:',
  'Lihat juga:',
  'Terkait:',
  'Rekomendasi:',
- 'Serupa:',
  'Pilihan terkait:',
- 'Artikel terkait:',
  'Konten serupa:',
- 'Lihat pula:',
+ 'Video serupa:',
+ 'Nonton juga:',
+ 'Mungkin kamu suka:',
  ];
  this.alchemistLabel = _alchemistLabel[hashSeed(this.domain+":alchemistLabel") % _alchemistLabel.length];
 
@@ -3879,7 +3794,7 @@ class SiteDNA {
  'Jelajahi juga:',
  'Lihat juga:',
  'Terkait dengan:',
- 'Baca juga:',
+ 'Tonton juga:',
  'Coba juga:',
  ];
  this.relatedStripLabel = _relatedStripLabel[hashSeed(this.domain+":relatedStripLabel") % _relatedStripLabel.length];
@@ -5012,11 +4927,13 @@ body {
 @media(min-width:480px){.${dna.cls.contentGrid}{grid-template-columns:repeat(3,1fr)}}
 @media(min-width:768px){.${dna.cls.contentGrid}{grid-template-columns:repeat(4,1fr)}}
 
-.view-layout{padding:12px;display:flex;flex-direction:column;gap:16px;max-width:1280px;margin:0 auto;width:100%;box-sizing:border-box}
-@media(min-width:900px){.view-layout{flex-direction:row;align-items:flex-start}.view-content{flex:1 1 0;min-width:0}.view-sidebar{width:320px;flex-shrink:0}}
+.${dna.cls.viewMain}{box-sizing:border-box;width:100%;overflow-x:hidden}
+.${dna.cls.viewLayout}{padding:16px;display:flex;flex-direction:column;gap:16px;max-width:1280px;margin:0 auto;width:100%;box-sizing:border-box}
+@media(min-width:768px){.${dna.cls.viewLayout}{padding:16px 24px}}
+@media(min-width:900px){.${dna.cls.viewLayout}{flex-direction:row;align-items:flex-start;padding:20px 24px}.view-content{flex:1 1 0;min-width:0}.view-sidebar{width:320px;flex-shrink:0;min-width:0}}
 .player-wrapper{border-radius:8px;overflow:hidden;margin-bottom:14px;background:#000;aspect-ratio:16/9}
 .player-wrapper iframe,.player-wrapper video{width:100%;height:100%;border:none;display:block}
-.content-title{font-size:1rem;font-weight:800;margin-bottom:8px}
+.content-title{font-size:1rem;font-weight:800;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
 .content-meta{display:flex;flex-wrap:wrap;gap:8px 10px;color:var(--text-dim);font-size:.75rem;margin-bottom:10px}
 .content-meta i{color:var(--gold)}
 
@@ -5122,7 +5039,7 @@ body {
 #backToTop{position:fixed;bottom:68px;right:10px;z-index:180;width:36px;height:36px;border-radius:8px;background:var(--gold);color:#000;display:flex;align-items:center;justify-content:center;transition:opacity .3s,visibility .3s;font-size:.72rem;opacity:0;visibility:hidden}
 .connection-status{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);background:#ef4444;color:#fff;padding:7px 18px;border-radius:4px;font-size:.76rem;display:flex;align-items:center;gap:7px;z-index:400}
 
-.filter-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:8px 0}
+
 .filter-tab{padding:10px 16px;min-height:44px;border-radius:99px;font-size:.78rem;font-weight:800;flex-shrink:0;display:inline-flex;align-items:center;gap:5px;color:var(--text-dim);border:1px solid var(--border2);background:var(--bg3);transition:all .2s;text-decoration:none}
 .filter-tab:hover{background:var(--bg4);color:var(--text)}
 .filter-tab.active{background:var(--gold);color:#000;border-color:var(--gold)}
@@ -5144,6 +5061,7 @@ function renderHead({ title, desc, canonical, ogImage, ogType, keywords, noindex
  const lcpPreload = ogImage ? `<link rel="preload" as="image" href="${h(ogImage)}" fetchpriority="high">` : '';
  const prevLink = prevUrl ? `<link rel="prev" href="${h(prevUrl)}">` : '';
  const nextLink = nextUrl ? `<link rel="next" href="${h(nextUrl)}">` : '';
+ const rssLink = `<link rel="alternate" type="application/rss+xml" title="${h(cfg.WARUNG_NAME)}" href="https://${h(cfg.WARUNG_DOMAIN)}/rss.xml">`;
  const themeColor = `hsl(${hashSeed(cfg.WARUNG_DOMAIN)%360},50%,45%)`;
 
  const webpageSchema = JSON.stringify({
@@ -5242,7 +5160,7 @@ function renderHead({ title, desc, canonical, ogImage, ogType, keywords, noindex
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 ${meta}
-${lcpPreload}${prevLink}${nextLink}
+${lcpPreload}${prevLink}${nextLink}${rssLink}
 <link rel="dns-prefetch" href="${h(cfg.DAPUR_BASE_URL||'https://dapur.dukunseo.com')}"><!-- Cahyane rembulan ora tekan kene -->
 ${adPreconnects}
 ${criticalCss}
@@ -5869,13 +5787,9 @@ async function handleHome(request, cfg, client, seo) {
  const homeKeywords=page===1?cfg.SEO_KEYWORDS:(type||'')+' halaman '+page+', '+cfg.SEO_KEYWORDS;
  const adNonce=generateNonce();
 
- const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage:(page===1&&items[0]?.thumbnail)||cfg.SEO_OG_IMAGE, ogType:'website', noindex:page>10&&!items.length||page>15, keywords:homeKeywords, cfg, seo, request, deliveryMode, extraHead:homeExtraHeadFinal, prevUrl, nextUrl, isPagePaginated:page>1, extraNonces:[adNonce] });
+ const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage:(page===1&&items[0]?.thumbnail)||cfg.SEO_OG_IMAGE, ogType:'website', noindex:page>10&&!items.length||page>30, keywords:homeKeywords, cfg, seo, request, deliveryMode, extraHead:homeExtraHeadFinal, prevUrl, nextUrl, isPagePaginated:page>1, extraNonces:[adNonce] });
  const nav=renderNavHeader({ cfg, isHome:!isTrending&&!sortParam, currentPage: isTrending?'trending':sortParam==='popular'?'popular':sortParam==='newest'?'latest':sortParam==='longest'?'longest':'' });
- const filterTabsItems=getContentTypes(cfg).map(t=>{
- const meta=TYPE_META[t]||{label:ucfirst(t),icon:'fa-file'};
- return `<a href="/?type=${t}" class="strip-item ${type===t?'active':''}" role="tab" aria-selected="${type===t?'true':'false'}" rel="nofollow"><i class="fas ${meta.icon}" aria-hidden="true"></i> ${meta.label}</a>`;
- }).join('');
- const filterTabs=`<div role="tablist" aria-label="${h(dna.ariaFilterTab)}"><a href="/" class="strip-item ${!type&&!sortParam&&!isTrending?'active':''}" role="tab" aria-selected="${!type&&!sortParam&&!isTrending?'true':'false'}">${h(dna.tabSemua)}</a>${filterTabsItems}</div>`;
+ const filterTabs='';
  let contentSection='';
  if (!items.length) {
  contentSection=`<div class="empty-state"><i class="fas fa-folder-open"></i><p>${h(dna.homeEmptyMsg)}</p></div>`;
@@ -5911,7 +5825,7 @@ async function handleHome(request, cfg, client, seo) {
  <p style="font-size:.78rem;color:var(--text-dim);line-height:1.6;margin:0;padding:0 0 2px">${h(dna.seoIntroTpl(cfg.WARUNG_NAME, cfg.WARUNG_TAGLINE||'video dan album'))}</p>
  </div>`
  : '';
- const main=`<main id="${dna.ids.mainContent}"><nav class="${dna.cls.categoryStrip}" aria-label="Filter kategori"><div class="${dna.cls.catStripInner}">${filterTabs}</div></nav>${renderBanner('header_top',cfg,request,adNonce)}${cfg.THEME_SHOW_TRENDING&&!deliveryMode?.lite?renderTrendingMobile(trending,cfg):''}${seoIntroBlock}<div class="${dna.cls.container}"><div class="${dna.cls.layoutMain}">
+ const main=`<main id="${dna.ids.mainContent}">${renderBanner('header_top',cfg,request,adNonce)}${cfg.THEME_SHOW_TRENDING&&!deliveryMode?.lite?renderTrendingMobile(trending,cfg):''}${seoIntroBlock}<div class="${dna.cls.container}"><div class="${dna.cls.layoutMain}">
 <section class="${dna.cls.contentArea}">
  <div class="${dna.cls.sectionHeader}"><h2 class="${dna.cls.sectionTitle}"><i class="fas fa-fire" aria-hidden="true"></i> ${sectionTitle}${page>1?` <span class="section-page">${h(dna.sectionPageLbl)}${page}</span>`:''}</h2></div>
  ${contentSection}
@@ -6060,10 +5974,17 @@ async function handleView(request, cfg, client, seo, segments, _earlyP={}) {
  if (cfg.HDC_ENABLED !== false && client.db) {
   if (!_hdcWarmInFlight.has(cfg.WARUNG_DOMAIN)) {
    _hdcWarmInFlight.add(cfg.WARUNG_DOMAIN);
-   const _warmP = SemanticIndex.warmFromD1(client.db, cfg.WARUNG_DOMAIN, cfg._env?.KV)
-    .catch(() => {})
-    .finally(() => _hdcWarmInFlight.delete(cfg.WARUNG_DOMAIN));
-   client.ctx?.waitUntil?.(_warmP);
+   // Cold start & cache kosong → warm sync dulu biar scanAll dapat data
+   const _cacheEmpty = ![..._hdcDocCache.keys()].some(k => k.startsWith(cfg.WARUNG_DOMAIN + ':'));
+   if (_cacheEmpty) {
+    await SemanticIndex.warmFromD1(client.db, cfg.WARUNG_DOMAIN, cfg._env?.KV).catch(() => {});
+    _hdcWarmInFlight.delete(cfg.WARUNG_DOMAIN);
+   } else {
+    const _warmP = SemanticIndex.warmFromD1(client.db, cfg.WARUNG_DOMAIN, cfg._env?.KV)
+     .catch(() => {})
+     .finally(() => _hdcWarmInFlight.delete(cfg.WARUNG_DOMAIN));
+    client.ctx?.waitUntil?.(_warmP);
+   }
   }
  }
 
@@ -6153,9 +6074,9 @@ async function handleView(request, cfg, client, seo, segments, _earlyP={}) {
  }
  // FIX SEO: tambah kalimat intro di sekitar tags — Google dapat konteks relevansi
  const _tagsIntro = ['Topik terkait:','Jelajahi juga:','Kategori serupa:','Tag konten:','Konten serupa di:','Lihat juga:','Terkait dengan:'][hashSeed(cfg.WARUNG_DOMAIN+':tagi') % 7];
- const tagsHtml=media.tags?.length?`<div class="content-tags" role="list" aria-label="${_tagsIntro}"><span class="tags-intro" style="font-size:.78rem;color:var(--text-dim);margin-right:4px">${_tagsIntro}</span>${media.tags.map(t=>`<a href="${h(tagUrl(t,cfg))}" class="${dna.cls.tag}" role="listitem">#${h(t)}</a>`).join('')}</div>`:'';
+ const tagsHtml=media.tags?.length?`<div class="content-tags" role="list" aria-label="${_tagsIntro}"><span class="tags-intro" style="font-size:.78rem;color:var(--text-dim);margin-right:4px">${_tagsIntro}</span>${media.tags.map(t=>`<a href="${h(tagUrl(t,cfg))}" class="${dna.cls.tag}" role="listitem">${h(t)}</a>`).join('')}</div>`:'';
 
- const popularTags=media.tags?.slice(5,12).map(t=>`<a href="${h(tagUrl(t,cfg))}" class="${dna.cls.tag}">#${h(t)}</a>`).join('')||''; let descHtml='';
+ const popularTags=''; let descHtml='';
  if (media.description&&type!=='story') {
  const short=mbSubstr(stripTags(media.description),0,300);
  // FIX SEO: full-desc pakai max-height bukan display:none — Google tetap crawl teks
@@ -6180,7 +6101,7 @@ async function handleView(request, cfg, client, seo, segments, _earlyP={}) {
  const relatedHtml=related.length?`<ol class="related-list">${related.map(rel=>`<li><a href="${h(itemUrl(rel,cfg))}" class="related-item"><picture>
  <source srcset="${h((() => { try { const u=new URL(safeThumb(rel,cfg)); u.searchParams.set('fm','webp'); u.searchParams.set('w','90'); return u.toString(); } catch { return safeThumb(rel,cfg)+'?fm=webp&w=90'; } })())}" type="image/webp">
  <img src="${h(safeThumb(rel,cfg))}" alt="${h(_altText(rel, { context:'related', domain:cfg.WARUNG_DOMAIN, siteName:cfg.WARUNG_NAME }))}" loading="lazy" decoding="async" width="90" height="54" data-fallback="${h(cfg.DEFAULT_THUMB)}">
-</picture><div class="related-info"><p class="related-title">${h(mbSubstr(rel.title,0,50))}</p><small class="related-meta"><span class="badge-small"><i class="fas ${TYPE_ICONS[rel.type]||'fa-file'}"></i> ${h(rel.type||'video')}</span><span><i class="fas fa-eye"></i> ${formatViews(rel.views||0)}</span></small></div></a></li>`).join('')}</ol>`:`<p class="empty-state">${h(dna.relatedEmpty)}</p>`;
+</picture><div class="related-info"><p class="related-title">${h(mbSubstr(rel.title,0,40))}</p><small class="related-meta"><span class="badge-small"><i class="fas ${TYPE_ICONS[rel.type]||'fa-file'}"></i> ${h(rel.type||'video')}</span><span><i class="fas fa-eye"></i> ${formatViews(rel.views||0)}</span></small></div></a></li>`).join('')}</ol>`:`<p class="empty-state">${h(dna.relatedEmpty)}</p>`;
 
  // ── 🧠 Rekomendasi Hybrid (API + HDC) + Cluster Topik ────────────────────────
  // Menggunakan _hdcScanResult dari scanAll() di atas — zero loop tambahan
@@ -6191,7 +6112,6 @@ async function handleView(request, cfg, client, seo, segments, _earlyP={}) {
  if (_hdcScanResult) {
  const { merged, cluster } = _hdcScanResult;
  hybridWidget = SemanticIndex.renderHybridWidget(merged, cfg);
- clusterWidget = SemanticIndex.renderClusterWidget(cluster, cfg);
  }
  } catch (err) {
  logError('SemanticIndex.hybrid', err);
@@ -6224,7 +6144,7 @@ async function handleView(request, cfg, client, seo, segments, _earlyP={}) {
 <p>${dna.seoArtP3Fn(typeLower)}${_artTags}${_artDate}</p>
 </section>`;
  // FIX: H1 pakai title yang sudah dibumbu — konsisten dengan homepage & breadcrumb
- const _h1Title = media.title;
+ const _h1Title = mbSubstr(media.title, 0, 50);
  const _h1Qual = media.quality_label ? ' ' + media.quality_label : '';
  const _ischema = type==="video" ? "https://schema.org/VideoObject" : "https://schema.org/ImageGallery";
  const contentInfo=`<div class="content-info" itemscope itemtype="${_ischema}"><h1 class="content-title" itemprop="name">${h(_h1Title)}${h(_h1Qual)}</h1>
@@ -6251,16 +6171,15 @@ ${tagsHtml}${descHtml}${alchemistHtml}${seoArticle}
  const pageScript=`<script nonce="${adNonce}">var _dna=${JSON.stringify({toastCopied:dna.toastCopied,promptCopy:dna.promptCopy,readMore:dna.readMoreLabel,close:dna.closeLbl})};function copyLink(btn){var url=btn.dataset.url||location.href;if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast(_dna.toastCopied)).catch(()=>fallbackCopy(url));}else fallbackCopy(url);}function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0;top:-999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast(_dna.toastCopied);}catch{prompt(_dna.promptCopy,text);}document.body.removeChild(ta);}function showToast(msg){var ex=document.querySelector('.toast');ex&&ex.remove();var t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.parentNode&&t.remove(),2200);}function shareContent(){if(navigator.share){navigator.share({title:${JSON.stringify(media.title)},url:location.href}).catch(()=>{});}else copyLink({dataset:{url:location.href}});}function toggleDesc(btn){var id=btn.getAttribute('aria-controls'),fd=document.getElementById(id);if(!fd)return;var open=btn.getAttribute('aria-expanded')==='true';if(open){fd.style.maxHeight='0';fd.classList.add('hidden');}else{fd.classList.remove('hidden');fd.style.maxHeight=fd.scrollHeight+'px';}fd.setAttribute('aria-hidden',String(open));btn.setAttribute('aria-expanded',String(!open));btn.textContent=open?_dna.readMore:_dna.close;}
 
 (function(){var cp=document.getElementById('btnCopyLink'),sh=document.getElementById('btnShare');if(cp)cp.addEventListener('click',function(){copyLink(this);});if(sh)sh.addEventListener('click',shareContent);document.querySelectorAll('.js-toggle-desc').forEach(function(b){b.addEventListener('click',function(){toggleDesc(this);});});})();<\/script>`;
- const breadcrumbHtml=renderBreadcrumb([{name:dna.berandaLabel,url:homeUrl(cfg)},{name:'Semua '+ucfirst(type),url:categoryUrl(type,1,cfg)},{name:mbSubstr(media.title,0,40),url:null}],cfg);
+ const breadcrumbHtml=renderBreadcrumb([{name:dna.berandaLabel,url:homeUrl(cfg)},{name:'Semua '+ucfirst(type),url:categoryUrl(type,1,cfg)},{name:mbSubstr(media.title,0,60),url:null}],cfg);
  const main=`<main id="${dna.ids.mainContent}" class="${dna.cls.viewMain}"><div class="${dna.cls.viewLayout}">
 <article class="view-content">
- ${renderBanner('header_top',cfg,request,adNonce)}
- ${breadcrumbHtml}${playerHtml}${contentInfo}
+ ${breadcrumbHtml}${playerHtml}
  ${renderBanner('after_content',cfg,request,adNonce)}
- ${renderBanner('before_grid',cfg,request,adNonce)}
+ ${contentInfo}
+ ${renderBanner('header_top',cfg,request,adNonce)}
 </article>
 <aside class="view-sidebar">
- ${renderBanner('sidebar_top',cfg,request,adNonce)}
  ${hybridWidget}
  ${clusterWidget}
  ${renderBanner('sidebar_mid',cfg,request,adNonce)}
@@ -6309,7 +6228,7 @@ async function handleDownload(request, cfg, client, seo, segments) {
  desc: dna.dlDescTpl(dna.dlPageVerb, media.title, cfg.WARUNG_NAME),
  canonical: seo.canonical('/download/' + id),
  ogImage: thumb, ogType: type==='video'?'video.movie':'website',
- noindex: true, keywords: dlKeywords, publishedTime: dlPublished,
+ noindex: false, keywords: dlKeywords, publishedTime: dlPublished,
  extraHead: dlSchema,
  cfg, seo, request, extraNonces: [adNonce],
  });
@@ -6470,18 +6389,10 @@ async function handleSearch(request, cfg, client, seo) {
  const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage:cfg.SEO_OG_IMAGE, ogType:'website', noindex:!q||(page>1&&!items.length), keywords:searchKeywords, cfg, seo, request, extraHead:searchExtraHead, prevUrl, nextUrl, isPagePaginated:page>1, extraNonces:[adNonce] });
  const nav=renderNavHeader({ cfg, currentPage:'search', q });
  const filterUrl=(t,pg=1)=>{const p={};if(q)p.q=q;if(t)p.type=t;if(pg>1)p.page=pg;return '/'+cfg.PATH_SEARCH+'?'+new URLSearchParams(p).toString();};
- const filterTabs=q?`<div class="filter-tabs"><a href="${filterUrl('')}" class="filter-tab ${!type?'active':''}">${h(dna.tabSemua)}</a>${getContentTypes(cfg).map(t=>{const meta=TYPE_META[t]||{icon:'fa-file'};return `<a href="${filterUrl(t)}" class="filter-tab ${type===t?'active':''}"><i class="fas ${meta.icon}"></i> ${ucfirst(t)}</a>`;}).join('')}</div>`:'';
+ const filterTabs='';
  const pageHeader=`<div class="${dna.cls.pageHeader}"><div class="${dna.cls.container}">
 <div class="page-label"><i class="fas fa-search"></i> ${dna.searchLabel}</div>
 <h1 class="${dna.cls.pageTitle}">${q?`Hasil untuk <em>"${h(mbSubstr(q,0,50))}"</em>`:h(dna.footerLinkSearch)}</h1>
-<form class="search-bar-large" role="search" action="/${h(cfg.PATH_SEARCH)}" method="get">
- <div class="search-bar">
- <label for="search-main-input" class="sr-only">${h(dna.ariaSearchLabel)}</label>
- <input id="search-main-input" type="search" name="q" value="${h(q)}" placeholder="${h(dna.searchInputPH)}" autocomplete="off" autofocus maxlength="100">
- ${type?`<input type="hidden" name="type" value="${h(type)}">`:''}
- <button type="submit" aria-label="${h(dna.ariaSearchBtn)}"><i class="fas fa-search"></i></button>
- </div>
-</form>
 ${filterTabs}
 </div></div>`;
  let contentSection='';
@@ -6631,10 +6542,10 @@ async function handleTag(request, cfg, client, seo, segments) {
  const prevUrl = page > 1 ? seo.canonical(tagFilterUrl(type, page-1)) : null;
  const nextUrl = page < totalPages ? seo.canonical(tagFilterUrl(type, page+1)) : null;
  const adNonce=generateNonce();
- const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage:items[0]?.thumbnail||cfg.SEO_OG_IMAGE, ogType:'website', noindex:page>5||(items.length<3&&page>1), keywords:tagKeywords, cfg, seo, request, extraHead:tagExtraHead, prevUrl, nextUrl, extraNonces:[adNonce] });
+ const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage:items[0]?.thumbnail||cfg.SEO_OG_IMAGE, ogType:'website', noindex:items.length<3&&page>1, keywords:tagKeywords, cfg, seo, request, extraHead:tagExtraHead, prevUrl, nextUrl, extraNonces:[adNonce] });
  const nav=renderNavHeader({cfg});
  const fromN=(page-1)*cfg.ITEMS_PER_PAGE+1, toN=Math.min(page*cfg.ITEMS_PER_PAGE,total);
- const filterTabs=total>0&&Object.keys(typeCounts).length?`<div class="filter-tabs"><a href="${tagFilterUrl('')}" class="filter-tab ${!type?'active':''}">${h(dna.tabSemua)}</a>${Object.entries(typeCounts).map(([t,c])=>`<a href="${tagFilterUrl(t)}" class="filter-tab ${type===t?'active':''}"><i class="fas ${TYPE_ICONS[t]||'fa-file'}"></i> ${ucfirst(t)} (${c})</a>`).join('')}</div>`:'';
+ const filterTabs='';
  const breadcrumbHtml=renderBreadcrumb([{name:dna.berandaLabel,url:homeUrl(cfg)},{name:dna.tagBreadLabel,url:'/'+cfg.PATH_TAG},{name:'#'+tag,url:null}],cfg);
  const tagHeader=`<div class="tag-header"><div class="${dna.cls.container}">${breadcrumbHtml}
 <h1 class="tag-hero"><i class="fas fa-tag" aria-hidden="true"></i><span>#${h(tag)}</span>${total>0?` <small style="font-weight:400;font-size:.55em;opacity:.6">(${numberFormat(total)})</small>`:""}</h1>
@@ -6789,15 +6700,28 @@ async function handleSitemap(request, cfg, client, env, honeyPrefix, cannibal=nu
 
  const base  = 'https://' + cfg.WARUNG_DOMAIN;
  const today = new Date().toISOString().slice(0,10);
- const MAX   = 4500;
+ const PER_SITEMAP = 500;
  const CC    = 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400';
+ const spage = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
 
  // ── Sitemap Index (/sitemap.xml tanpa ?type) ─────────────────────────────────
  if (!stype) {
+  let videoPages = 1, albumPages = 1;
+  try {
+   const [vRes, aRes] = await Promise.allSettled([
+    client.getMediaList({page:1, per_page:1, sort:'newest', type:'video'}),
+    client.getMediaList({page:1, per_page:1, sort:'newest', type:'album'}),
+   ]);
+   const vTotal = vRes.status==='fulfilled' ? (vRes.value?.meta?.pagination?.total || vRes.value?.meta?.total || 0) : 0;
+   const aTotal = aRes.status==='fulfilled' ? (aRes.value?.meta?.pagination?.total || aRes.value?.meta?.total || 0) : 0;
+   videoPages = Math.max(1, Math.ceil(vTotal / PER_SITEMAP));
+   albumPages = Math.max(1, Math.ceil(aTotal / PER_SITEMAP));
+  } catch(e){ if(cfg.DAPUR_DEBUG) console.error('Sitemap probe:',e.message); }
+
   const entries = [
    {loc: base+'/sitemap.xml?type=main',  lastmod: today},
-   {loc: base+'/sitemap.xml?type=video', lastmod: today},
-   {loc: base+'/sitemap.xml?type=album', lastmod: today},
+   ...Array.from({length: videoPages}, (_,i) => ({loc: base+`/sitemap.xml?type=video&page=${i+1}`, lastmod: today})),
+   ...Array.from({length: albumPages}, (_,i) => ({loc: base+`/sitemap.xml?type=album&page=${i+1}`, lastmod: today})),
    {loc: base+'/sitemap.xml?type=tag',   lastmod: today},
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
@@ -6828,7 +6752,7 @@ async function handleSitemap(request, cfg, client, env, honeyPrefix, cannibal=nu
    }
   } catch(e){ if(cfg.DAPUR_DEBUG) console.error('Sitemap tag:',e.message); }
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
-   + tagUrls.slice(0,MAX).map(u=>`<url><loc>${h(u.loc)}</loc><lastmod>${h(u.lastmod)}</lastmod><changefreq>${h(u.changefreq)}</changefreq><priority>${h(u.priority)}</priority></url>`).join('\n')
+   + tagUrls.map(u=>`<url><loc>${h(u.loc)}</loc><lastmod>${h(u.lastmod)}</lastmod><changefreq>${h(u.changefreq)}</changefreq><priority>${h(u.priority)}</priority></url>`).join('\n')
    + `\n</urlset>`;
   return new Response(xml,{status:200,headers:{'Content-Type':'application/xml; charset=UTF-8','Cache-Control':CC}});
  }
@@ -6837,14 +6761,31 @@ async function handleSitemap(request, cfg, client, env, honeyPrefix, cannibal=nu
  if (stype === 'main') {
   const urls = [
    {loc:base+'/',                          changefreq:'daily',   priority:'1.0', lastmod:today},
-   {loc:base+'/'+cfg.PATH_SEARCH,          changefreq:'weekly',  priority:'0.5'},
+   {loc:base+'/'+cfg.PATH_TAG,             changefreq:'daily',   priority:'0.8', lastmod:today},
    ...getContentTypes(cfg).map(t=>({loc:base+'/'+cfg.PATH_CATEGORY+'/'+t, changefreq:'daily', priority:'0.9', lastmod:today})),
   ];
   [cfg.PATH_ABOUT,cfg.PATH_CONTACT,cfg.PATH_FAQ,cfg.PATH_DMCA,cfg.PATH_TERMS,cfg.PATH_PRIVACY].forEach(slug=>{
-   urls.push({loc:base+'/'+slug, changefreq:'monthly', priority:'0.6', lastmod:today});
+   if (slug) urls.push({loc:base+'/'+slug, changefreq:'monthly', priority:'0.6', lastmod:today});
   });
-  urls.push({loc:base+'/profile', changefreq:'monthly', priority:'0.5', lastmod:today});
-  if (cannibal) cannibal.getAllUrls().forEach(u=>urls.push({loc:u, changefreq:'daily', priority:'0.8', lastmod:today}));
+  urls.push({loc:base+'/profile', changefreq:'weekly', priority:'0.7', lastmod:today});
+  if (cannibal) {
+   // Probe total per keyword untuk generate paginated sitemap URLs
+   const kwUrls = [];
+   for (const kw of cannibal.allKeywords) {
+    const slug = cannibal.toSlug(kw);
+    const kwBase = base+'/'+cannibal.basePath+'/'+slug;
+    kwUrls.push({loc:kwBase, changefreq:'daily', priority:'0.8', lastmod:today});
+    try {
+     const res = await client.search(kw, {page:1, per_page:1, sort:'popular'});
+     const kwTotal = res?.meta?.pagination?.total || res?.meta?.total || 0;
+     const kwPages = Math.max(1, Math.ceil(kwTotal / 24));
+     for (let p=2; p<=kwPages; p++) {
+      kwUrls.push({loc:kwBase+'?page='+p, changefreq:'weekly', priority:'0.7', lastmod:today});
+     }
+    } catch {}
+   }
+   kwUrls.forEach(u => urls.push(u));
+  }
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
    + urls.map(u=>`<url><loc>${h(u.loc)}</loc>${u.lastmod?`<lastmod>${h(u.lastmod)}</lastmod>`:''}<changefreq>${h(u.changefreq)}</changefreq><priority>${h(u.priority)}</priority></url>`).join('\n')
    + `\n</urlset>`;
@@ -6859,18 +6800,13 @@ async function handleSitemap(request, cfg, client, env, honeyPrefix, cannibal=nu
  let contentUrls = [];
  try {
   const ftype = isVid ? 'video' : 'album';
-  // OPT: kurangi per_page 200→100 untuk hemat memory + CPU parsing
-  // Total: 3×100=300 items masih lebih dari cukup untuk sitemap
-  const [t1,r1,r2] = await Promise.allSettled([
-   client.getTrending(100, ftype),
-   client.getMediaList({page:1, per_page:100, sort:'newest', type:ftype}),
-   client.getMediaList({page:2, per_page:100, sort:'newest', type:ftype}),
+  // Fetch halaman yang diminta — tiap sitemap = 1 halaman API (PER_SITEMAP item)
+  const [r1] = await Promise.allSettled([
+   client.getMediaList({page:spage, per_page:PER_SITEMAP, sort:'newest', type:ftype}),
   ]);
   const seen = new Set();
   const items = [
-   ...((t1.status==='fulfilled'?t1.value?.data:null)||[]),
    ...((r1.status==='fulfilled'?r1.value?.data:null)||[]),
-   ...((r2.status==='fulfilled'?r2.value?.data:null)||[]),
   ].filter(item=>{
    if (!item?.id || seen.has(item.id)) return false;
    seen.add(item.id);
@@ -6924,7 +6860,7 @@ async function handleSitemap(request, cfg, client, env, honeyPrefix, cannibal=nu
  const vidNs = isVid ? ' xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"' : '';
  const xmlns = `xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ${imgNs}${vidNs}`;
  const xml   = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset ${xmlns}>\n`
-  + contentUrls.slice(0,MAX).map(u=>`<url>\n <loc>${h(u.loc)}</loc>\n ${u.lastmod?`<lastmod>${h(u.lastmod)}</lastmod>\n `:''}<changefreq>${h(u.changefreq)}</changefreq>\n <priority>${h(u.priority)}</priority>${u.extra||''}\n</url>`).join('\n')
+  + contentUrls.map(u=>`<url>\n <loc>${h(u.loc)}</loc>\n ${u.lastmod?`<lastmod>${h(u.lastmod)}</lastmod>\n `:''}<changefreq>${h(u.changefreq)}</changefreq>\n <priority>${h(u.priority)}</priority>${u.extra||''}\n</url>`).join('\n')
   + `\n</urlset>`;
  return new Response(xml,{status:200,headers:{'Content-Type':'application/xml; charset=UTF-8','Cache-Control':CC}});
 }
@@ -7920,11 +7856,8 @@ async function _fetch(request, env, ctx) {
  'Disallow: /trap',
  'Crawl-delay: 10',
  '',
- // Sitemap index — berisi pointer ke video/album/tag/main sitemap
+ // Sitemap index — Google akan crawl turunannya sendiri
  `Sitemap: https://${cfg.WARUNG_DOMAIN}/sitemap.xml`,
- `Sitemap: https://${cfg.WARUNG_DOMAIN}/sitemap.xml?type=video`,
- `Sitemap: https://${cfg.WARUNG_DOMAIN}/sitemap.xml?type=album`,
- `Sitemap: https://${cfg.WARUNG_DOMAIN}/sitemap.xml?type=tag`,
  ];
  robotsBody = lines.join('\n');
  _robotsCache.set(rk, robotsBody);
@@ -8009,7 +7942,7 @@ async function handleRss(request, cfg, client) {
  try {
  const rssTypes = getContentTypes(cfg);
  const rssType = rssTypes.length===1 ? rssTypes[0] : undefined;
- const result = await client.getMediaList({ per_page:20, sort:'newest', ...(rssType?{type:rssType}:{}) });
+ const result = await client.getMediaList({ per_page:50, sort:'newest', ...(rssType?{type:rssType}:{}) });
  items = result?.data||[];
  } catch(err) { logError('RSS.fetch', err); }
 
@@ -8512,19 +8445,28 @@ class KeywordCannibalize {
  const cfg = this.cfg;
  const dna = SiteDNA.get(cfg.WARUNG_DOMAIN);
  const slug = this.toSlug(keyword);
- const canonical = 'https://'+cfg.WARUNG_DOMAIN+'/'+this.basePath+'/'+slug;
+ const url = new URL(request.url);
+ const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+ const canonical = 'https://'+cfg.WARUNG_DOMAIN+'/'+this.basePath+'/'+slug+(page>1?'?page='+page:'');
+ const canonicalBase = 'https://'+cfg.WARUNG_DOMAIN+'/'+this.basePath+'/'+slug;
  const nonce = generateNonce();
 
- let items = [];
+ let items = [], pagination = {}, total = 0;
  try {
- const res = await client.search(keyword, { per_page: 24, sort: 'popular' });
+ const res = await client.search(keyword, { per_page: 24, page, sort: 'popular' });
  items = res?.data || [];
+ pagination = res?.meta?.pagination || res?.meta || {};
+ total = pagination.total || items.length;
 
- if (!items.length) {
+ if (!items.length && page === 1) {
  const tr = await client.getTrending(24);
  items = tr?.data || [];
  }
  } catch {}
+
+ const totalPages = pagination.total_pages || Math.ceil(total / 24) || 1;
+ const prevUrl = page > 1 ? seo.canonical(canonicalBase+(page>2?'?page='+(page-1):'')) : null;
+ const nextUrl = page < totalPages ? seo.canonical(canonicalBase+'?page='+(page+1)) : null;
 
  const pageTitle = dna.kwTitleTpl(keyword, cfg.WARUNG_NAME);
  const pageDesc = dna.kwDescTpl(keyword, cfg.WARUNG_NAME);
@@ -8564,7 +8506,9 @@ class KeywordCannibalize {
  keywords: pageKeywords,
  ogType: 'website',
  ogImage: items[0]?.thumbnail || cfg.SEO_OG_IMAGE,
- noindex: false,
+ noindex: items.length < 3 && page > 1,
+ prevUrl, nextUrl,
+ isPagePaginated: page > 1,
  cfg, seo, request,
  extraNonces: [nonce],
  extraHead: `
@@ -8589,6 +8533,7 @@ ${nav}
  <div class="${dna.cls.layoutMain}">
  <section class="${dna.cls.contentArea}" aria-label="Konten ${h(keyword)}">
  ${grid}
+ ${renderPagination(pagination, p => canonicalBase+(p>1?'?page='+p:''), cfg)}
  <div class="${dna.cls.tagCloud}" style="margin:14px 0">${relatedLinks}</div>
  </section>
  </div>
@@ -9278,23 +9223,6 @@ function amplifyIntent(html, request, cfg) {
  'nonton ' + core,
  ].slice(0, 8); // max 8 pills — Ora ono sing ngerti, kejaba sing nulis
 
- const relatedStrip =
- `<div class="intent-related" style="margin-top:18px;padding:10px 14px;`
- + `background:var(--bg2,#111);border-radius:8px;font-size:.82rem">`
- + `<strong><i class="fas fa-search-plus" aria-hidden="true"></i> ${h(_dna.relatedStripLabel)}</strong> `
- + relatedTerms.map(t =>
- `<a href="${sPath}?q=${encodeURIComponent(t)}" rel="nofollow" `
- + `style="display:inline-block;margin:2px 4px;padding:2px 10px;`
- + `border:1px solid var(--border2,#333);border-radius:99px;`
- + `color:var(--text-dim,#888);text-decoration:none">${h(t)}</a>`
- ).join('')
- + `</div>`;
-
- // idempotency: jangan inject ulang kalau sudah ada
- if (!html.includes('intent-related')) {
-  html = html.replace(/<\/main>/, `${relatedStrip}\n</main>`);
- }
-
  return html;
 }
 
@@ -9630,7 +9558,13 @@ const SemanticIndex = {
  const hasViews = scanEntries.some(e => (e.views || 0) > 0);
  if (hasViews && scanEntries.length > _HDC_PRUNE_N) {
  scanEntries.sort((a, b) => (b.views || 0) - (a.views || 0));
- scanEntries = scanEntries.slice(0, _HDC_PRUNE_N);
+ const topN = Math.floor(_HDC_PRUNE_N * 0.7); // 70% konten populer
+ const restN = _HDC_PRUNE_N - topN;            // 30% random dari sisa (konten tenggelam)
+ const topEntries = scanEntries.slice(0, topN);
+ const restPool  = scanEntries.slice(topN);
+ const restSeed  = hashSeed(domain + ':prune:' + targetId + ':' + Math.floor(Date.now() / 3_600_000));
+ const restSample = seededShuffle(restPool, restSeed).slice(0, restN);
+ scanEntries = [...topEntries, ...restSample];
  }
  // ─────────────────────────────────────────────────────────────────────────
 
@@ -9675,8 +9609,12 @@ const SemanticIndex = {
  .sort((a, b) => b.score - a.score)
  .slice(0, 1);
 
- const merged = [...byId.values()]
+ // Ambil pool lebih besar (3x), sort by score, lalu shuffle hourly — fresh & random tiap jam
+ const _mergePool = [...byId.values()]
  .sort((a, b) => b.score - a.score)
+ .slice(0, mergeN * 3);
+ const _hourSlot = Math.floor(Date.now() / 3_600_000);
+ const merged = seededShuffle(_mergePool, hashSeed(domain + ':merged:' + targetId + ':' + _hourSlot))
  .slice(0, mergeN);
 
  const cluster = clusterMembers
@@ -9706,7 +9644,7 @@ const SemanticIndex = {
  ${thumb}
  <div style="flex:1;min-width:0">
  <a href="${h(r.url)}" style="display:block;font-size:.82rem;color:var(--text-color,#fff);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
- title="${h(r.title)}">${h(mbSubstr(r.title, 0, 55))}</a>
+ title="${h(r.title)}">${h(mbSubstr(r.title, 0, 40))}</a>
  </div>
 </li>`;
  }).join('');
@@ -9736,7 +9674,7 @@ const SemanticIndex = {
  ${thumb}
  <div style="flex:1;min-width:0">
  <a href="${h(r.url)}" style="display:block;font-size:.82rem;color:var(--text-color,#fff);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
- title="${h(r.title)}">${h(mbSubstr(r.title,0,55))}</a>
+ title="${h(r.title)}">${h(mbSubstr(r.title,0,40))}</a>
  </div>
 </li>`;
  }).join('');
@@ -9745,7 +9683,8 @@ const SemanticIndex = {
  <h2 class="widget-title" style="display:flex;align-items:center;gap:6px">
  <i class="fas fa-layer-group" aria-hidden="true"></i> ${SiteDNA.get(cfg.WARUNG_DOMAIN).hdcHybridTitle}
  </h2>
- <ul style="list-style:none;margin:0;padding:0">${items}</ul>
+ <ul class="hdc-hybrid-list" style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:0">${items}</ul>
+ <style>.hdc-hybrid-list{display:grid;grid-template-columns:1fr}@media(min-width:768px){.hdc-hybrid-list{grid-template-columns:1fr 1fr;column-gap:16px}}.hdc-hybrid-list li{border-bottom:1px solid var(--border,#252525)}.hdc-hybrid-list li:last-child{border-bottom:none}@media(min-width:768px){.hdc-hybrid-list li:nth-last-child(1):nth-child(odd),.hdc-hybrid-list li:nth-last-child(2){border-bottom:none}}</style>
 </section>`;
  },
 
