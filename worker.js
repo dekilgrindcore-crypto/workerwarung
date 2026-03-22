@@ -4475,7 +4475,7 @@ function getDeliveryMode(request) {
  return { lite:slowNet||saveData, saveData, mobile:cfDev==='mobile'||_MOBILE_UA_RX.test(ua), lowEnd:slowNet };
 }
 
-function renderBanner(name, cfg, request=null, nonce='') {
+function renderBanner(name, cfg, request=null, nonce='', seenScripts=null) {
  if (!cfg.ADS_ENABLED) return '';
  const slots=getAdsSlots(cfg); const slot=slots[name];
  if (!slot||!slot.enabled) return '';
@@ -4483,9 +4483,19 @@ function renderBanner(name, cfg, request=null, nonce='') {
  const align=slot.align==='left'?'left':slot.align==='right'?'right':'center';
  const labelHtml = '';
 
+ // Dedup external script src — cegah ad-provider.js dimuat >1x per halaman
+ const dedupScripts = (code) => {
+  if (!code || !seenScripts) return code;
+  return code.replace(/<script\b([^>]*)\bsrc=(["'])([^"']+)\2([^>]*)><\/script>/gi, (m, a1, q, src, a2) => {
+   if (seenScripts.has(src)) return ''; // sudah ada — buang duplikat
+   seenScripts.add(src);
+   return m; // pertama kali — tetap render
+  });
+ };
+
  const injectNonce = (code) => {
- if (!code||!nonce) return sanitizeAdCode(code);
- return sanitizeAdCode(code).replace(/<script\b([^>]*)>/gi, (m, attrs) => {
+ if (!code||!nonce) return dedupScripts(sanitizeAdCode(code));
+ return dedupScripts(sanitizeAdCode(code)).replace(/<script\b([^>]*)>/gi, (m, attrs) => {
  if (attrs.includes('nonce=')) return m;
  return `<script${attrs} nonce="${nonce}">`;
  });
@@ -4528,12 +4538,12 @@ function renderBanner(name, cfg, request=null, nonce='') {
  return '';
 }
 
-function renderBannerMidGrid(index, cfg, request=null, nonce='') {
+function renderBannerMidGrid(index, cfg, request=null, nonce='', seenScripts=null) {
  if (!cfg.ADS_ENABLED) return '';
  const slot=getAdsSlots(cfg)['mid_grid'];
  if (!slot||!slot.enabled) return '';
 
- return renderBanner('mid_grid', cfg, request, nonce);
+ return renderBanner('mid_grid', cfg, request, nonce, seenScripts);
 }
 
 function bannerStyles() {
@@ -5107,7 +5117,11 @@ body {
 function renderHead({ title, desc, canonical, ogImage, ogType, keywords, noindex, contentId=0, contentType='meta', extraHead='', cfg, seo, request, prevUrl=null, nextUrl=null, publishedTime='', modifiedTime='', isPagePaginated=false, deliveryMode=null, extraNonces=[] }) {
  const nonce = generateNonce();
  const meta = seo.renderMeta({ title, desc, canonical, ogImage, ogType, keywords, noindex, contentId, contentType, publishedTime, modifiedTime, isPagePaginated, nonce });
- const lcpPreload = ogImage ? `<link rel="preload" as="image" href="${h(ogImage)}" fetchpriority="high">` : '';
+ const _lcpWebp = ogImage ? (() => {
+  try { const u=new URL(ogImage); u.searchParams.set('fm','webp'); u.searchParams.set('w','640'); return u.toString(); }
+  catch { return ogImage+(ogImage.includes('?')?'&':'?')+'fm=webp&w=640'; }
+})() : null;
+const lcpPreload = ogImage ? `<link rel="preload" as="image" href="${h(ogImage)}" imagesrcset="${h(_lcpWebp+' 640w, '+ogImage+' 1x')}" imagesizes="(max-width:480px) 320px, 640px" fetchpriority="high">` : '';
  const prevLink = prevUrl ? `<link rel="prev" href="${h(prevUrl)}">` : '';
  const nextLink = nextUrl ? `<link rel="next" href="${h(nextUrl)}">` : '';
  const rssLink = `<link rel="alternate" type="application/rss+xml" title="${h(cfg.WARUNG_NAME)}" href="https://${h(cfg.WARUNG_DOMAIN)}/rss.xml">`;
@@ -5540,13 +5554,13 @@ function renderCard(item, cfg, index=99) {
  </a>`;
 }
 
-function renderGrid(items, cfg, midBannerEnabled=true, request=null, nonce='') {
+function renderGrid(items, cfg, midBannerEnabled=true, request=null, nonce='', seenScripts=null) {
  const dna = SiteDNA.get(cfg.WARUNG_DOMAIN);
  const insertAfter = getAdsSlots(cfg)['mid_grid']?.insert_after || 6;
  let html=`<div class="${dna.cls.vGrid}">`;
  items.forEach((item,i) => {
  html+=renderCard(item,cfg,i);
- if (midBannerEnabled && (i+1)%insertAfter===0) html+=renderBannerMidGrid(i,cfg,request,nonce);
+ if (midBannerEnabled && (i+1)%insertAfter===0) html+=renderBannerMidGrid(i,cfg,request,nonce,seenScripts);
  });
  html+='</div>';
  return html;
@@ -5830,12 +5844,17 @@ async function handleHome(request, cfg, client, seo) {
  : seo.itemListSchema(items,canonical,cfg);
  // ── Preload gambar pertama sebagai LCP hint (PageSpeed) ──────────────────
  const _lcpHomeImg = (items.length > 0 && page === 1) ? safeThumb(items[0], cfg) : null;
- const _lcpHomePreload = _lcpHomeImg ? `<link rel="preload" as="image" href="${h(_lcpHomeImg)}" fetchpriority="high">` : '';
+ const _lcpHomeWebp = _lcpHomeImg ? (() => {
+  try { const u=new URL(_lcpHomeImg); u.searchParams.set('fm','webp'); u.searchParams.set('w','640'); return u.toString(); }
+  catch { return _lcpHomeImg+(_lcpHomeImg.includes('?')?'&':'?')+'fm=webp&w=640'; }
+})() : null;
+const _lcpHomePreload = _lcpHomeImg ? `<link rel="preload" as="image" href="${h(_lcpHomeImg)}" imagesrcset="${h(_lcpHomeWebp+' 640w, '+_lcpHomeImg+' 1x')}" imagesizes="(max-width:480px) 320px, 640px" fetchpriority="high">` : '';
  const homeExtraHeadFinal = homeExtraHead + _lcpHomePreload;
  const prevUrl=page>1?seo.canonical(buildCanonicalParams(page-1)):null;
  const nextUrl=page<paginationTotal?seo.canonical(buildCanonicalParams(page+1)):null;
  const homeKeywords=page===1?cfg.SEO_KEYWORDS:(type||'')+' halaman '+page+', '+cfg.SEO_KEYWORDS;
  const adNonce=generateNonce();
+ const _adSeen = new Set(); // dedup ad-provider.js per halaman
 
  const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage:(page===1&&items[0]?.thumbnail)||cfg.SEO_OG_IMAGE, ogType:'website', noindex:page>10&&!items.length||page>30, keywords:homeKeywords, cfg, seo, request, deliveryMode, extraHead:homeExtraHeadFinal, prevUrl, nextUrl, isPagePaginated:page>1, extraNonces:[adNonce] });
  const nav=renderNavHeader({ cfg, isHome:!isTrending&&!sortParam, currentPage: isTrending?'trending':sortParam==='popular'?'popular':sortParam==='newest'?'latest':sortParam==='longest'?'longest':'' });
@@ -5850,7 +5869,7 @@ async function handleHome(request, cfg, client, seo) {
  const _gridItems = (_refQuery && page === 1)
  ? seededShuffle([...items], hashSeed(dna.gridShuffleSalt + ':' + _refQuery.toLowerCase().slice(0, 40)))
  : items;
- contentSection=renderBanner('before_grid',cfg,request,adNonce)+renderGrid(_gridItems,cfg,true,request,adNonce)
+ contentSection=renderBanner('before_grid',cfg,request,adNonce, _adSeen)+renderGrid(_gridItems, cfg, true, request, adNonce, _adSeen)
  +renderPagination(pagination, p=>{
  const params=new URLSearchParams();
  if (type) params.set('type',type);
@@ -5861,7 +5880,7 @@ async function handleHome(request, cfg, client, seo) {
  return qs?`/?${qs}`:'/';
  }, cfg)
  +(cfg.THEME_SHOW_PROMO?`<div class="promo-banner"><i class="fas fa-crown"></i> ${h(cfg.THEME_PROMO_TEXT)} <i class="fas fa-crown"></i></div>`:'')
- +renderBanner('after_grid',cfg,request,adNonce);
+ +renderBanner('after_grid',cfg,request,adNonce, _adSeen);
  }
  const sectionTitle = isTrending ? dna.navLabels.trending
  : sortParam==='popular' ? dna.navLabels.popular
@@ -5875,7 +5894,7 @@ async function handleHome(request, cfg, client, seo) {
  <p style="font-size:.78rem;color:var(--text-dim);line-height:1.6;margin:0;padding:0 0 2px">${h(dna.seoIntroTpl(cfg.WARUNG_NAME, cfg.WARUNG_TAGLINE||'video dan album'))}</p>
  </div>`
  : '';
- const main=`<main id="${dna.ids.mainContent}">${renderBanner('header_top',cfg,request,adNonce)}${cfg.THEME_SHOW_TRENDING&&!deliveryMode?.lite?renderTrendingMobile(trending,cfg):''}${seoIntroBlock}<div class="${dna.cls.container}"><div class="${dna.cls.layoutMain}">
+ const main=`<main id="${dna.ids.mainContent}">${renderBanner('header_top',cfg,request,adNonce, _adSeen)}${cfg.THEME_SHOW_TRENDING&&!deliveryMode?.lite?renderTrendingMobile(trending,cfg):''}${seoIntroBlock}<div class="${dna.cls.container}"><div class="${dna.cls.layoutMain}">
 <section class="${dna.cls.contentArea}">
  <div class="${dna.cls.sectionHeader}"><h2 class="${dna.cls.sectionTitle}"><i class="fas fa-fire" aria-hidden="true"></i> ${sectionTitle}${page>1?` <span class="section-page">${h(dna.sectionPageLbl)}${page}</span>`:''}</h2></div>
  ${contentSection}
@@ -6092,6 +6111,7 @@ async function handleView(request, cfg, client, seo, segments, _earlyP={}) {
   // Solusi: defer schema build ke closure — schema string dicompute saat adNonce tersedia.
  // adNonce di-generate dulu — dipakai oleh schema, renderHead, dan renderBanner
  const adNonce=generateNonce();
+ const _adSeen = new Set(); // dedup ad-provider.js per halaman
   const _hdcSchemaParts = [];
   if (cfg.HDC_ENABLED !== false && _hdcScanResult) {
    const { merged, cluster } = _hdcScanResult;
@@ -6106,7 +6126,12 @@ async function handleView(request, cfg, client, seo, segments, _earlyP={}) {
  // (Google bisa salah menginterpretasikan sebagai pagination, padahal ini konten independen)
  const viewPrevUrl=null;
  const viewNextUrl=null;
- const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage, ogType, keywords, noindex:isHidden, cfg, seo, request, extraHead, contentId:id, contentType:type, publishedTime, modifiedTime, prevUrl:viewPrevUrl, nextUrl:viewNextUrl, extraNonces:[adNonce] });
+ // ── LCP preload: thumbnail konten sebagai LCP hint di <head> ──────────────
+ // Tanpa ini, browser discover gambar LCP terlambat → PageSpeed flag "not in initial document"
+ const _lcpViewImg = ogImage || cfg.SEO_OG_IMAGE;
+ const _lcpViewPreload = _lcpViewImg ? `<link rel="preload" as="image" href="${h(_lcpViewImg)}" fetchpriority="high">` : '';
+ const extraHeadFinal = extraHead + _lcpViewPreload;
+ const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage, ogType, keywords, noindex:isHidden, cfg, seo, request, extraHead:extraHeadFinal, contentId:id, contentType:type, publishedTime, modifiedTime, prevUrl:viewPrevUrl, nextUrl:viewNextUrl, extraNonces:[adNonce] });
  const nav=renderNavHeader({cfg});
  let playerHtml='';
  if (type==='video') {
@@ -6222,27 +6247,27 @@ ${tagsHtml}${descHtml}${alchemistHtml}${seoArticle}
 </div></div>`;
  const lightboxHtml=type==='album'?`<div id="lightbox" class="lightbox hidden" role="dialog" aria-modal="true"><div class="lightbox-content"><img id="lightbox-img" src="" alt="" loading="lazy" decoding="async" class="lightbox-image" width="1280" height="720"><button type="button" id="lightboxClose" class="lightbox-close" aria-label="${h(dna.lbClose)}"><i class="fas fa-times"></i></button><div class="lightbox-nav"><button type="button" id="lightboxPrev" class="lightbox-prev" aria-label="${h(dna.lbPrev)}"><i class="fas fa-chevron-left"></i></button><button type="button" id="lightboxNext" class="lightbox-next" aria-label="${h(dna.lbNext)}"><i class="fas fa-chevron-right"></i></button></div><div class="lightbox-caption" id="lightbox-caption"></div></div></div>
 <script nonce="${adNonce}">var _lb={idx:0,photos:${JSON.stringify(albumPhotos.map(p=>p.url))},titles:${JSON.stringify(albumPhotos.map(()=>media.title))}};function openLightbox(src,i,t){_lb.idx=i;var img=document.getElementById('lightbox-img'),cap=document.getElementById('lightbox-caption'),lb=document.getElementById('lightbox');img.src=src;img.alt=t+' - Foto '+(i+1);cap.textContent=t+' ('+(i+1)+' / '+_lb.photos.length+')';lb.classList.remove('hidden');document.body.style.overflow='hidden';lb.querySelector('.lightbox-close').focus();}function closeLightbox(e){if(!e||e.target===e.currentTarget||e.target.closest('.lightbox-close')){var lb=document.getElementById('lightbox');lb.classList.add('hidden');document.body.style.overflow='';}}function navigateLightbox(d){var n=(_lb.idx+d+_lb.photos.length)%_lb.photos.length;_lb.idx=n;var img=document.getElementById('lightbox-img'),cap=document.getElementById('lightbox-caption');img.src=_lb.photos[n];cap.textContent=_lb.titles[n]+' ('+(n+1)+' / '+_lb.photos.length+')';}(function(){var lb=document.getElementById('lightbox'),lc=document.getElementById('lightboxClose'),lp=document.getElementById('lightboxPrev'),ln=document.getElementById('lightboxNext');if(lb)lb.addEventListener('click',function(e){if(e.target===lb)closeLightbox(e);});if(lc)lc.addEventListener('click',closeLightbox);if(lp)lp.addEventListener('click',function(){navigateLightbox(-1);});if(ln)ln.addEventListener('click',function(){navigateLightbox(1);});document.querySelectorAll('.js-lightbox-open').forEach(function(btn){btn.addEventListener('click',function(){openLightbox(btn.dataset.src,parseInt(btn.dataset.idx),btn.dataset.title);});});})();document.addEventListener('keydown',function(e){var lb=document.getElementById('lightbox');if(lb&&!lb.classList.contains('hidden')){if(e.key==='Escape')closeLightbox();if(e.key==='ArrowLeft')navigateLightbox(-1);if(e.key==='ArrowRight')navigateLightbox(1);}});<\/script>`:'';;
- const pageScript=`<script nonce="${adNonce}">var _dna=${JSON.stringify({toastCopied:dna.toastCopied,promptCopy:dna.promptCopy,readMore:dna.readMoreLabel,close:dna.closeLbl})};function copyLink(btn){var url=btn.dataset.url||location.href;if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast(_dna.toastCopied)).catch(()=>fallbackCopy(url));}else fallbackCopy(url);}function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0;top:-999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast(_dna.toastCopied);}catch{prompt(_dna.promptCopy,text);}document.body.removeChild(ta);}function showToast(msg){var ex=document.querySelector('.toast');ex&&ex.remove();var t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.parentNode&&t.remove(),2200);}function shareContent(){if(navigator.share){navigator.share({title:${JSON.stringify(media.title)},url:location.href}).catch(()=>{});}else copyLink({dataset:{url:location.href}});}function toggleDesc(btn){var id=btn.getAttribute('aria-controls'),fd=document.getElementById(id);if(!fd)return;var open=btn.getAttribute('aria-expanded')==='true';if(open){fd.style.maxHeight='0';fd.classList.add('hidden');}else{fd.classList.remove('hidden');fd.style.maxHeight=fd.scrollHeight+'px';}fd.setAttribute('aria-hidden',String(open));btn.setAttribute('aria-expanded',String(!open));btn.textContent=open?_dna.readMore:_dna.close;}
+ const pageScript=`<script nonce="${adNonce}">var _dna=${JSON.stringify({toastCopied:dna.toastCopied,promptCopy:dna.promptCopy,readMore:dna.readMoreLabel,close:dna.closeLbl})};function copyLink(btn){var url=btn.dataset.url||location.href;if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast(_dna.toastCopied)).catch(()=>fallbackCopy(url));}else fallbackCopy(url);}function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0;top:-999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast(_dna.toastCopied);}catch{prompt(_dna.promptCopy,text);}document.body.removeChild(ta);}function showToast(msg){var ex=document.querySelector('.toast');ex&&ex.remove();var t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.parentNode&&t.remove(),2200);}function shareContent(){if(navigator.share){navigator.share({title:${JSON.stringify(media.title)},url:location.href}).catch(()=>{});}else copyLink({dataset:{url:location.href}});}function toggleDesc(btn){var id=btn.getAttribute('aria-controls'),fd=document.getElementById(id);if(!fd)return;var open=btn.getAttribute('aria-expanded')==='true';if(open){fd.style.maxHeight='0';fd.classList.add('hidden');}else{/* Baca scrollHeight SEBELUM classList.remove agar tidak trigger forced reflow */var sh=fd.scrollHeight;fd.classList.remove('hidden');fd.style.maxHeight=sh+'px';}fd.setAttribute('aria-hidden',String(open));btn.setAttribute('aria-expanded',String(!open));btn.textContent=open?_dna.readMore:_dna.close;}
 
 (function(){var cp=document.getElementById('btnCopyLink'),sh=document.getElementById('btnShare');if(cp)cp.addEventListener('click',function(){copyLink(this);});if(sh)sh.addEventListener('click',shareContent);document.querySelectorAll('.js-toggle-desc').forEach(function(b){b.addEventListener('click',function(){toggleDesc(this);});});})();<\/script>`;
  const breadcrumbHtml=renderBreadcrumb([{name:dna.berandaLabel,url:homeUrl(cfg)},{name:'Semua '+ucfirst(type),url:categoryUrl(type,1,cfg)},{name:mbSubstr(media.title,0,60),url:null}],cfg);
  const main=`<main id="${dna.ids.mainContent}" class="${dna.cls.viewMain}"><div class="${dna.cls.viewLayout}">
 <article class="view-content">
  ${breadcrumbHtml}${playerHtml}
- ${renderBanner('after_content',cfg,request,adNonce)}
+ ${renderBanner('after_content',cfg,request,adNonce, _adSeen)}
  ${contentInfo}
- ${renderBanner('header_top',cfg,request,adNonce)}
+ ${renderBanner('header_top',cfg,request,adNonce, _adSeen)}
 </article>
 <aside class="view-sidebar">
  ${hybridWidget}
  ${clusterWidget}
- ${renderBanner('sidebar_mid',cfg,request,adNonce)}
+ ${renderBanner('sidebar_mid',cfg,request,adNonce, _adSeen)}
  ${popularTags?`<section><h3 class="widget-title" style="margin-top:16px"><i class="fas fa-tags"></i> ${dna.tagWidgetTitle}</h3><div class="${dna.cls.tagCloud}">${popularTags}</div></section>`:''}
  ${pasfRenderWidget(pasfGetRelated(cfg.WARUNG_DOMAIN, media.title || '', cfg), cfg)}
- ${renderBanner('sidebar_bottom',cfg,request,adNonce)}
+ ${renderBanner('sidebar_bottom',cfg,request,adNonce, _adSeen)}
 </aside>
 </div></main>${lightboxHtml}${pageScript}`;
- const popunderView = renderBanner('footer_popunder', cfg, request, adNonce);
+ const popunderView = renderBanner('footer_popunder', cfg, request, adNonce, _adSeen);
 
  // ── ETag + Conditional Request (304 Not Modified) ───────────────────────
  // ETag stabil dari konten identifier — tidak berubah selama konten sama.
@@ -6271,6 +6296,7 @@ async function handleDownload(request, cfg, client, seo, segments) {
  const canonical = seo.canonical(type === 'album' ? albumUrl(id, media.title, cfg) : contentUrl(id, media.title, cfg));
  const thumb = media.thumbnail || cfg.SEO_OG_IMAGE;
  const adNonce = generateNonce();
+ const _adSeen = new Set(); // dedup ad-provider.js per halaman
  const dlKeywords = (media.tags||[]).slice(0,5).join(', ') || cfg.SEO_KEYWORDS;
  const dlPublished = media.created_at ? isoDate(media.created_at) : '';
  const dlSchema = seo.contentSchema(media, canonical, '')+seo.breadcrumbSchema([
@@ -6433,6 +6459,7 @@ async function handleSearch(request, cfg, client, seo) {
  const pageDesc=dna.searchPageDescFn(q,total,cfg.WARUNG_NAME);
  const canonical=seo.canonical('/'+cfg.PATH_SEARCH+(q?'?q='+encodeURIComponent(q):''),request);
  const adNonce=generateNonce();
+ const _adSeen = new Set(); // dedup ad-provider.js per halaman
  const paginationTotal=pagination.total_pages||Math.ceil(total/cfg.ITEMS_PER_PAGE)||1;
  const prevUrl=q&&page>1?seo.canonical('/'+cfg.PATH_SEARCH+'?q='+encodeURIComponent(q)+(page>2?'&page='+(page-1):'')):null;
  const nextUrl=q&&page<paginationTotal?seo.canonical('/'+cfg.PATH_SEARCH+'?q='+encodeURIComponent(q)+'&page='+(page+1)):null;
@@ -6456,7 +6483,7 @@ ${filterTabs}
  else {
  const from=(page-1)*cfg.ITEMS_PER_PAGE+1, to=Math.min(page*cfg.ITEMS_PER_PAGE,total);
  contentSection=`<div class="search-stats"><i class="fas fa-layer-group"></i> ${dna.searchStatsTpl(from,to,total)}</div>`
- +renderBanner('before_grid',cfg,request,adNonce)+renderGrid(items,cfg,true,request,adNonce)+renderBanner('after_grid',cfg,request,adNonce)+renderPagination(pagination, p=>filterUrl(type,p), cfg);
+ +renderBanner('before_grid',cfg,request,adNonce, _adSeen)+renderGrid(items, cfg, true, request, adNonce, _adSeen)+renderBanner('after_grid',cfg,request,adNonce, _adSeen)+renderPagination(pagination, p=>filterUrl(type,p), cfg);
  }
  const allTags={};
  items.forEach(item=>(item.tags||[]).forEach(t=>{allTags[t]=(allTags[t]||0)+1;}));
@@ -6477,7 +6504,7 @@ ${filterTabs}
  const main=`${pageHeader}<main id="${dna.ids.mainContent}"><div class="${dna.cls.container}"><div class="${dna.cls.layoutMain}">
 <section class="${dna.cls.contentArea}">${contentSection}${tagsHtml}${pasfSearchHtml}</section>
 </div></div></main>`;
- const popunderSearch = renderBanner('footer_popunder', cfg, request, adNonce);
+ const popunderSearch = renderBanner('footer_popunder', cfg, request, adNonce, _adSeen);
  return new Response(head+nav+main+renderFooter(cfg,request,adNonce)+popunderSearch, { status:200, headers:htmlHeaders(cfg,'search') });
 }
 
@@ -6596,6 +6623,7 @@ async function handleTag(request, cfg, client, seo, segments) {
  const prevUrl = page > 1 ? seo.canonical(tagFilterUrl(type, page-1)) : null;
  const nextUrl = page < totalPages ? seo.canonical(tagFilterUrl(type, page+1)) : null;
  const adNonce=generateNonce();
+ const _adSeen = new Set(); // dedup ad-provider.js per halaman
  const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage:items[0]?.thumbnail||cfg.SEO_OG_IMAGE, ogType:'website', noindex:items.length<3&&page>1, keywords:tagKeywords, cfg, seo, request, extraHead:tagExtraHead, prevUrl, nextUrl, extraNonces:[adNonce] });
  const nav=renderNavHeader({cfg});
  const fromN=(page-1)*cfg.ITEMS_PER_PAGE+1, toN=Math.min(page*cfg.ITEMS_PER_PAGE,total);
@@ -6615,7 +6643,7 @@ ${filterTabs}</div></div>`;
  const _tagItems = (_refQTag && page === 1)
  ? seededShuffle([...items], hashSeed(dna.gridShuffleSalt + ':tag:' + _refQTag.toLowerCase().slice(0, 40)))
  : items;
- contentSection=renderBanner('before_grid',cfg,request,adNonce)+renderGrid(_tagItems,cfg,true,request,adNonce)+renderBanner('after_grid',cfg,request,adNonce)+renderPagination(pagination, p=>tagFilterUrl(type,p), cfg);
+ contentSection=renderBanner('before_grid',cfg,request,adNonce, _adSeen)+renderGrid(_tagItems, cfg, true, request, adNonce, _adSeen)+renderBanner('after_grid',cfg,request,adNonce, _adSeen)+renderPagination(pagination, p=>tagFilterUrl(type,p), cfg);
  }
  const _tagIntroTpls = [
   `Temukan ${numberFormat(total)} konten "${h(tag)}" gratis streaming HD di ${h(cfg.WARUNG_NAME)}. Tonton tanpa daftar, update setiap hari.`,
@@ -6626,7 +6654,7 @@ ${filterTabs}</div></div>`;
  const main=`${tagHeader}<main id="${dna.ids.mainContent}"><div class="${dna.cls.container}"><div class="${dna.cls.layoutMain}">
 <section class="${dna.cls.contentArea}">${_tagIntro}${contentSection}</section>
 </div></div></main>`;
- const popunderTag = renderBanner('footer_popunder', cfg, request, adNonce);
+ const popunderTag = renderBanner('footer_popunder', cfg, request, adNonce, _adSeen);
  return new Response(head+nav+main+renderFooter(cfg,request,adNonce)+popunderTag, { status:200, headers:htmlHeaders(cfg,'list') });
 }
 
@@ -6656,6 +6684,7 @@ async function handleCategory(request, cfg, client, seo, segments) {
  const extraHead=seo.collectionPageSchema(typeLabel,items,canonical,cfg)+seo.itemListSchema(items,canonical,cfg)+seo.breadcrumbSchema([{name:dna.berandaLabel,url:'/'},{name:typeLabel,url:null}],'/'+cfg.PATH_CATEGORY+'/'+type);
  const catKeywords=typeLabel+', '+type+' gratis, '+type+' terbaru, '+cfg.SEO_KEYWORDS;
  const adNonce=generateNonce();
+ const _adSeen = new Set(); // dedup ad-provider.js per halaman
  const head=renderHead({ title:pageTitle, desc:pageDesc, canonical, ogImage:items[0]?.thumbnail||cfg.SEO_OG_IMAGE, ogType:'website', noindex:page>3&&!items.length, keywords:catKeywords, cfg, seo, request, extraHead, prevUrl, nextUrl, extraNonces:[adNonce] });
  const nav=renderNavHeader({cfg});
  const breadcrumbHtml=renderBreadcrumb([{name:dna.berandaLabel,url:homeUrl(cfg)},{name:typeLabel,url:null}],cfg);
@@ -6672,7 +6701,7 @@ ${pagination.total?`<p class="${dna.cls.pageDesc}">${h(dna.katCountTpl(paginatio
  const _catItems = (_refQCat && page === 1)
  ? seededShuffle([...items], hashSeed(dna.gridShuffleSalt + ':cat:' + _refQCat.toLowerCase().slice(0, 40)))
  : items;
- contentSection=renderBanner('before_grid',cfg,request,adNonce)+renderGrid(_catItems,cfg,true,request,adNonce)+renderBanner('after_grid',cfg,request,adNonce)+renderPagination(pagination, p=>'/'+cfg.PATH_CATEGORY+'/'+type+(p>1?'/'+p:''), cfg);
+ contentSection=renderBanner('before_grid',cfg,request,adNonce, _adSeen)+renderGrid(_catItems, cfg, true, request, adNonce, _adSeen)+renderBanner('after_grid',cfg,request,adNonce, _adSeen)+renderPagination(pagination, p=>'/'+cfg.PATH_CATEGORY+'/'+type+(p>1?'/'+p:''), cfg);
  }
  const _catTotal = pagination.total ? numberFormat(pagination.total)+' '+typeLabel.toLowerCase() : typeLabel.toLowerCase();
  const _catTrend3 = trending.slice(0,3).map(i=>h(i._original_title||i.title||'')).filter(Boolean).join(', ');
@@ -6685,7 +6714,7 @@ ${pagination.total?`<p class="${dna.cls.pageDesc}">${h(dna.katCountTpl(paginatio
  const main=`${pageHeader}<main id="${dna.ids.mainContent}"><div class="${dna.cls.container}"><div class="${dna.cls.layoutMain}">
 <section class="${dna.cls.contentArea}">${_catIntro}${contentSection}</section>
 </div></div></main>`;
- const popunderCat = renderBanner('footer_popunder', cfg, request, adNonce);
+ const popunderCat = renderBanner('footer_popunder', cfg, request, adNonce, _adSeen);
  return new Response(head+nav+main+renderFooter(cfg,request,adNonce)+popunderCat, { status:200, headers:htmlHeaders(cfg,'list') });
 }
 
@@ -7295,7 +7324,11 @@ async function _fetch(request, env, ctx) {
  }
  if (!env.ASSETS) return new Response('Not Found', { status: 404 });
  const _staticUrl = new URL(request.url); _staticUrl.search = '';
- return env.ASSETS.fetch(new Request(_staticUrl.toString(), request));
+ const _staticResp = await env.ASSETS.fetch(new Request(_staticUrl.toString(), request));
+ const _staticHeaders = new Headers(_staticResp.headers);
+ _staticHeaders.set('Cache-Control', 'public, max-age=31536000, immutable');
+ _staticHeaders.set('Timing-Allow-Origin', '*');
+ return new Response(_staticResp.body, { status: _staticResp.status, statusText: _staticResp.statusText, headers: _staticHeaders });
  }
 
  // ── Anomaly Engine v2: SWR Revalidation Bypass ───────────────────────────
